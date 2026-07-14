@@ -1,15 +1,14 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-# 1. Fetch any remote updates first
+# 1. Sync remote updates from your backup
 git pull origin main 2>/dev/null
 
-# 2. Inject environment keys from your hidden .env profile
 if [ -f .env ]; then
     source .env
 fi
 
-# Rotate keys cleanly for the active background runtime session
+# Rotate keys cleanly for this session
 [ ! -f .gemini_idx ] && echo 0 > .gemini_idx
 G_IDX=$(cat .gemini_idx)
 var_g="GEMINI_$G_IDX"
@@ -22,10 +21,14 @@ var_or="OR_$OR_IDX"
 export OPENROUTER_API_KEY="${!var_or}"
 echo $(( (OR_IDX + 1) % 6 )) > .or_idx
 
-# 3. Fire OpenCode directly to handle the build task execution
+# 2. Rebuild the visual knowledge graph map for your AI assistant
+echo "📊 Reindexing workspace architectural mapping data..."
+graphify build . 2>/dev/null
+
+# 3. Fire OpenCode directly to handle your build instructions
 opencode --auto
 
-# 4. Instantly push all build output up to the GitHub repository backup
+# 4. Push code changes alongside the updated graph structures to GitHub
 git add .
-git commit -m "Automated cloud build update"
+git commit -m "Automated cloud build & graph update sync"
 git push origin main 2>/dev/null

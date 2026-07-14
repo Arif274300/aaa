@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Arif274300/aaa#readme",
   "dependencies": {
+    "express": "^5.2.1",
     "graphify": "^1.0.0"
   }
 }
