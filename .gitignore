@@ -1,1 +1,10 @@
+# Ignore local runtime key maps
 .env
+.env.*
+.gemini_idx
+.or_idx
+
+# Ignore build artifacts and system cache files
+__pycache__/
+node_modules/
+.DS_Store
