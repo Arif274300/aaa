@@ -1,7 +1,11 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-# Load variables securely from hidden configuration file
+# 1. Download tracking updates from your backup
+echo "Syncing latest codebase from GitHub backup..."
+git pull origin main 2>/dev/null
+
+# Load environment configuration variables securely
 if [ -f .env ]; then
     source .env
 fi
@@ -23,21 +27,18 @@ while true; do
   CURRENT_OR_KEY="${!var_or}"
   echo $(( (OR_IDX + 1) % 6 )) > .or_idx
 
-  # Export both groups into the background environment
   export GOOGLE_GENERATIVE_AI_API_KEY="$CURRENT_G_KEY"
   export GEMINI_API_KEY="$CURRENT_G_KEY"
   export GOOGLE_API_KEY="$CURRENT_G_KEY"
   export OPENROUTER_API_KEY="$CURRENT_OR_KEY"
   export OPENAI_API_KEY="$CURRENT_OR_KEY"
 
-  echo "----------------------------------------"
-  echo " Workspace Path: ~/aaa | Manual Model Choice Mode"
+  echo "--------------------------------------------------------"
+  echo " Workspace: ~/aaa | Production: Cloud Shell"
   echo " Current Gemini Key: #$G_IDX | OpenRouter Key: #$OR_IDX"
-  echo "----------------------------------------"
-  echo "Launching OpenCode interface..."
-  sleep 1
+  echo "--------------------------------------------------------"
   
-  # Launch OpenCode smoothly with no forced settings
+  # Launch OpenCode in manual model mode for stability
   opencode --auto
 
   # Codespace Backup Sync Action
@@ -46,6 +47,16 @@ while true; do
   git commit -m "Codebase dynamic update sync"
   git push origin main 2>/dev/null
   
-  echo "🔄 Press [ENTER] to rotate keys and restart, or Ctrl+C to exit."
-  read tmp
+  echo "🔄 Options:"
+  echo "  [ENTER] : Rotate keys and restart OpenCode"
+  echo "  c       : Deploy a new GitHub Codespace backup instance"
+  echo "  Ctrl+C  : Exit to terminal"
+  read -p "Selection: " choice
+
+  if [ "$choice" = "c" ] || [ "$choice" = "C" ]; then
+      echo "🚀 Instructing GitHub to provision a new Codespace backup container..."
+      gh codespace create -r Arif274300/aaa -b main --default
+      echo "✅ Codespace successfully built on GitHub."
+      sleep 3
+  fi
 done
